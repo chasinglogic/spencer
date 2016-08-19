@@ -1,4 +1,7 @@
+from os.path import isfile, getctime
+
 import requests
+import time
 import json
 import pprint
 import zipfile
@@ -7,17 +10,19 @@ import numpy as np
 import pandas as pd
 import sklearn as sk
 
-# Download the zip from mtgjson
-r = requests.get("http://mtgjson.com/json/AllCards-x.json.zip")
-z = zipfile.ZipFile(io.BytesIO(r.content))
-z.extractall("./")
-
 raw_json = ""
+one_day = time.now() - 60*60*24 # Number of seconds in one day 
 
+# Only download if we don't already have the file or the file is older than a day
+if not isfile("AllCards-x.json") or getctime("AllCards-x.json") < one_day:
+    # Download the zip from mtgjson
+    r = requests.get("http://mtgjson.com/json/AllCards-x.json.zip")
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    z.extractall("./")
+    
 with open("AllCards-x.json") as f:
     raw_json = json.load(f) 
-    # df = pd.read_json(f.read())
-
+    
 # AllCards-x.json returns the cards as a giant JSON object, here we turn them
 # into an array of dicts and convert printings to printing removing printings
 # Since working with multiple printings will be easier as seperate rows.
