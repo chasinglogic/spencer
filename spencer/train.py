@@ -11,7 +11,7 @@ import pandas as pd
 import sklearn as sk
 
 raw_json = ""
-one_day = time.now() - 60*60*24 # Number of seconds in one day 
+one_day = time.time() - 60*60*24 # Number of seconds in one day 
 
 # Only download if we don't already have the file or the file is older than a day
 if not isfile("AllCards-x.json") or getctime("AllCards-x.json") < one_day:
@@ -54,6 +54,8 @@ for name, card in raw_json.items():
         cards.append(c)
             
 df = pd.DataFrame(cards)
+
+# Don't need imageName or rulings
 df.drop('imageName', axis=1, inplace=True)
 df.drop('rulings', axis=1, inplace=True)
 
